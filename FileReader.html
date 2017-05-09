@@ -1,0 +1,823 @@
+
+
+<!DOCTYPE html>
+<html>
+
+<style>
+.buttonClass {
+    display: inline;
+    background: #b8c5db;
+    font-size: larger;
+    font-family: arial;
+    border: 2px solid cornflowerblue;
+}
+
+.textClass{
+	font-family: arial;
+    font-size: larger;
+    color: #026AB0;
+    font-weight: bold;
+}
+
+</style>
+
+
+<script>
+
+var algorithmArray = [];
+function createTable(values, free, tbl) {
+	var body = document.getElementById("view");
+	var params = []; 
+	params.push(values[0]);
+    
+	for(var i = 1; i <= params.length; i++) {
+    	var tr = tbl.insertRow();
+    	for(var j = 0; j <= 3; j++) {
+            var td = tr.insertCell();
+            td.style.border = '1px solid black';
+            td.style.width  = '100px';
+            
+            if(j == 0)
+            td.appendChild(document.createTextNode(params));
+            
+            else if(j == 1) {
+            var checkbox = document.createElement("INPUT");
+            checkbox.type = "checkbox";
+            checkbox.checked = free;
+            checkbox.disabled = true;
+    		td.appendChild(checkbox);
+            }
+    		
+            else if(j == 2){
+            	var input = document.createElement("INPUT");
+            	input.id = "lRange_"+params[0].trim();
+            	input.type = "text";
+            	input.value = "";
+            	input.onkeyup=function(){validate()};
+        		td.appendChild(input);
+           	 }
+            
+            else if(j == 3){
+            	var input = document.createElement("INPUT");
+            	input.id = "hRange_"+params[0].trim();
+            	input.type = "text";
+            	input.value = "";
+            	input.onkeyup=function(){validate()};
+        		td.appendChild(input);
+              }
+    	
+    		}		
+    	}
+    body.appendChild(tbl);
+    var node = document.getElementById('createFile').style.display = 'block';
+}
+
+function createPaths(value) {
+	var body = document.getElementById("viewPath");
+	
+	var heading = document.createElement("H3");
+	heading.innerHTML = "PATH OPTIONS";
+	body.appendChild(heading);
+
+    var tb  = document.createElement('table');
+    tb.style.width  = '400px';
+    tb.id = "pathTable";
+    tb.style.border = '1px solid black';
+	    
+	 for(var i = 0; i <=3 ; i++) {
+		 
+		 var key; 
+		 
+		 switch (i) {
+		    case 0:
+		    	key = "output_dir";
+		        break;
+		    case 1:
+		    	key = "bng_command";
+		        break;
+		    case 2:
+		    	key = "model";
+		        break;
+		    case 3:
+		    	key = "exp_file";
+		        break;
+		}
+    	var tr = tb.insertRow();
+    	for(var j = 0; j < 2; j++) {
+            var td = tr.insertCell();
+            td.style.border = '1px solid black';
+            td.style.width  = '100px';
+            
+            if(j == 1) {
+            var input = document.createElement("INPUT");
+        	input.id = key;
+        	input.name = key;
+        	input.type = "text";
+        	input.value = "";
+        	td.appendChild(input);
+            }
+            if(j == 0) {
+            var label = document.createElement("Label");
+            label.htmlFor = key;
+            label.innerHTML=key;
+            td.appendChild(label);
+            }
+    		}		
+    	}
+	    body.appendChild(tb);
+}
+
+function createGeneralOptions(value) {
+var body = document.getElementById("viewGeneralOptions");
+	
+	var heading = document.createElement("H3");
+	heading.innerHTML = "GENERAL OPTIONS";
+	body.appendChild(heading);
+
+    var tb  = document.createElement('table');
+    tb.style.width  = '400px';
+    tb.id = "generalTable";
+    tb.style.border = '1px solid black';
+	    
+	 for(var i = 0; i <=3 ; i++) {
+		 
+		 var key; 
+		 
+		 switch (i) {
+		    case 0:
+		    	key = "job_name";
+		        break;
+		    case 1:
+		    	key = "use_cluster";
+		        break;
+		    case 2:
+		    	key = "cluster_parallel";
+		        break;
+		    case 3:
+		    	key = "max_walltime";
+		        break;
+		}
+    	var tr = tb.insertRow();
+    	for(var j = 0; j < 2; j++) {
+            var td = tr.insertCell();
+            td.style.border = '1px solid black';
+            td.style.width  = '100px';
+            
+            if(j == 1) {
+            var input = document.createElement("INPUT");
+        	input.id = key;
+        	input.name = key;
+        	input.type = "text";
+        	input.value = "";
+			input.onkeyup=function(){validateGeneralOptions()};
+        	td.appendChild(input);
+            }
+            if(j == 0) {
+            var label = document.createElement("Label");
+            label.htmlFor = key;
+            label.innerHTML=key;
+            td.appendChild(label);
+            }
+    		}		
+		}
+	    body.appendChild(tb);
+}
+
+function createFittingOptions(value) {
+	
+	var one = ["extraWeight", "swapRate", "forceDifferentParents", "maxRetryDifferentParents", "smoothing", "keepParents", "maxFitTime", "maxNumSimulations"];
+	var two = ["inertia", "cognitive", "social", "nmax", "nmin", "inertiaInit", "inertiaFinal", "absTolerance", "relTolerance", "mutateQPSO", "betaMax", "betaMin", "topology","psoType"];
+	var three = ["numIslands", "mutateType", "migrationFrequency", "numToMigrate"];
+	var four = ["minTemp", "minRadius", "localSearchProbability", "randParamsProbability"];
+	
+	    for(var k=0; k < algorithmArray.length; k++ ) {
+	    	
+	    	if(algorithmArray[k] == "one") 
+	    		createGAFittingOptions(one);
+	    	if(algorithmArray[k] == "two")
+	    		createPSFittingOptions(two);
+	    	if(algorithmArray[k] == "three")
+	    		createDEFittingOptions(three);
+	    	if(algorithmArray[k] == "four")
+	    		createSAFittingOptions(four);
+		
+	    }
+	}
+	
+	
+	function createGAFittingOptions(type) {
+		
+		var body = document.getElementById("viewGAFittingOptions");
+		
+		var heading = document.createElement("H3");
+		heading.innerHTML = "GA FITTING OPTIONS";
+		body.appendChild(heading);
+
+	    var tb  = document.createElement('table');
+	    tb.style.width  = '400px';
+	    tb.id = "fittingTableGA";
+	    tb.style.border = '1px solid black';
+	    
+	    
+	    for(var i = 0; i < type.length; i++) {
+			 
+			var key = type[i]; 
+	    	var tr = tb.insertRow();
+	    	for(var j = 0; j < 2; j++) {
+	            var td = tr.insertCell();
+	            td.style.border = '1px solid black';
+	            td.style.width  = '100px';
+	            
+	            if(j == 1) {
+	            var input = document.createElement("INPUT");
+	        	input.id = key;
+	        	input.name = key;
+	        	input.type = "text";
+	        	input.value = "";
+				input.onkeyup=function(){validateGAFittingOptions()};
+	        	td.appendChild(input);
+	            }
+	            if(j == 0) {
+	            var label = document.createElement("Label");
+	            label.htmlFor = key;
+	            label.innerHTML=key;
+	            td.appendChild(label);
+	            }
+	    		}		
+	    	}
+		 
+		    body.appendChild(tb);
+	}
+	
+function createPSFittingOptions(type) {
+		
+		var body = document.getElementById("viewPSFittingOptions");
+		
+		var heading = document.createElement("H3");
+		heading.innerHTML = "PS FITTING OPTIONS";
+		body.appendChild(heading);
+
+	    var tb  = document.createElement('table');
+	    tb.style.width  = '400px';
+	    tb.id = "fittingTablePS";
+	    tb.style.border = '1px solid black';
+	    
+	    
+	    for(var i = 0; i < type.length; i++) {
+			 
+			var key = type[i]; 
+	    	var tr = tb.insertRow();
+	    	for(var j = 0; j < 2; j++) {
+	            var td = tr.insertCell();
+	            td.style.border = '1px solid black';
+	            td.style.width  = '100px';
+	            
+	            if(j == 1) {
+	            var input = document.createElement("INPUT");
+	        	input.id = key;
+	        	input.name = key;
+	        	input.type = "text";
+	        	input.value = "";
+				input.onkeyup=function(){validatePSFittingOptions()};
+	        	td.appendChild(input);
+	            }
+	            if(j == 0) {
+	            var label = document.createElement("Label");
+	            label.htmlFor = key;
+	            label.innerHTML=key;
+	            td.appendChild(label);
+	            }
+	    		}		
+	    	}
+		 
+		    body.appendChild(tb);
+	}
+	
+function createDEFittingOptions(type) {
+	
+	var body = document.getElementById("viewDEFittingOptions");
+	
+	var heading = document.createElement("H3");
+	heading.innerHTML = "DE FITTING OPTIONS";
+	body.appendChild(heading);
+
+    var tb  = document.createElement('table');
+    tb.style.width  = '400px';
+    tb.id = "fittingTableDE";
+    tb.style.border = '1px solid black';
+    
+    
+    for(var i = 0; i < type.length; i++) {
+		 
+		var key = type[i]; 
+    	var tr = tb.insertRow();
+    	for(var j = 0; j < 2; j++) {
+            var td = tr.insertCell();
+            td.style.border = '1px solid black';
+            td.style.width  = '100px';
+            
+            if(j == 1) {
+            var input = document.createElement("INPUT");
+        	input.id = key;
+        	input.name = key;
+        	input.type = "text";
+        	input.value = "";
+			input.onkeyup=function(){validateDEFittingOptions()};
+        	td.appendChild(input);
+            }
+            if(j == 0) {
+            var label = document.createElement("Label");
+            label.htmlFor = key;
+            label.innerHTML=key;
+            td.appendChild(label);
+            }
+    		}		
+    	}
+	 
+	    body.appendChild(tb);
+}
+	
+	
+function createSAFittingOptions(type) {
+		
+		var body = document.getElementById("viewSAFittingOptions");
+		
+		var heading = document.createElement("H3");
+		heading.innerHTML = "SA FITTING OPTIONS";
+		body.appendChild(heading);
+
+	    var tb  = document.createElement('table');
+	    tb.style.width  = '400px';
+	    tb.id = "fittingTableSA";
+	    tb.style.border = '1px solid black';
+	    
+	    
+	    for(var i = 0; i < type.length; i++) {
+			 
+			var key = type[i]; 
+	    	var tr = tb.insertRow();
+	    	for(var j = 0; j < 2; j++) {
+	            var td = tr.insertCell();
+	            td.style.border = '1px solid black';
+	            td.style.width  = '100px';
+	            
+	            if(j == 1) {
+	            var input = document.createElement("INPUT");
+	        	input.id = key;
+	        	input.name = key;
+	        	input.type = "text";
+	        	input.value = "";
+				input.onkeyup=function(){validateSAFittingOptions()};
+	        	td.appendChild(input);
+	            }
+	            if(j == 0) {
+	            var label = document.createElement("Label");
+	            label.htmlFor = key;
+	            label.innerHTML=key;
+	            td.appendChild(label);
+	            }
+	    		}		
+	    	}
+		 
+		    body.appendChild(tb);
+	}
+function validate() {
+	var value = document.getElementById(this.getSelection().anchorNode.firstChild.id).value;
+	if(value.match(/^-?\d*(\.\d+)?$/))
+		document.getElementById('viewError').style.display = "none";
+	else
+		document.getElementById('viewError').style.display = "inline";
+}
+
+function validateGeneralOptions() {
+	var value = document.getElementById(this.getSelection().anchorNode.firstChild.id).value;
+	if(value.match(/^-?\d*(\.\d+)?$/))
+		document.getElementById('viewGError').style.display = "none";
+	else
+		document.getElementById('viewGError').style.display = "inline";
+}
+
+function validateGAFittingOptions() {
+	var value = document.getElementById(this.getSelection().anchorNode.firstChild.id).value;
+	if(value.match(/^-?\d*(\.\d+)?$/))
+		document.getElementById('viewGAFError').style.display = "none";
+	else
+		document.getElementById('viewGAFError').style.display = "inline";
+}
+function validatePSFittingOptions() {
+	var value = document.getElementById(this.getSelection().anchorNode.firstChild.id).value;
+	if(value.match(/^-?\d*(\.\d+)?$/))
+		document.getElementById('viewPSFError').style.display = "none";
+	else
+		document.getElementById('viewPSFError').style.display = "inline";
+}
+function validateDEFittingOptions() {
+	var value = document.getElementById(this.getSelection().anchorNode.firstChild.id).value;
+	if(value.match(/^-?\d*(\.\d+)?$/))
+		document.getElementById('viewDEFError').style.display = "none";
+	else
+		document.getElementById('viewDEFError').style.display = "inline";
+}
+function validateSAFittingOptions() {
+	var value = document.getElementById(this.getSelection().anchorNode.firstChild.id).value;
+	if(value.match(/^-?\d*(\.\d+)?$/))
+		document.getElementById('viewSAFError').style.display = "none";
+	else
+		document.getElementById('viewSAFError').style.display = "inline";
+}
+
+function clearTabels() {
+	document.getElementById("viewPath").innerHTML = "";
+	document.getElementById("viewGeneralOptions").innerHTML = "";
+	document.getElementById("viewGAFittingOptions").innerHTML = "";
+	document.getElementById("viewPSFittingOptions").innerHTML = "";
+	document.getElementById("viewDEFittingOptions").innerHTML = "";
+	document.getElementById("viewSAFittingOptions").innerHTML = "";
+	document.getElementById("examplebngl").value = "";
+	document.getElementById("outputConf").innerHTML = "";
+	document.getElementById("buttonConf").style.display = "none";
+}
+
+function checkRadio(temp) {
+	console.log("value   "+temp.value);
+	      
+	if (temp.checked) 
+	    	  algorithmArray.push(temp.value);
+		else {
+			for(var i = algorithmArray.length-1; i--;){
+				if (algorithmArray[i] === temp.value) algorithmArray.splice(i, 1);
+			}
+		}
+	      initializeTables(algorithmArray);
+}
+
+function initializeTables(value) {
+	clearTabels();
+	
+    createPaths(value);
+    createGeneralOptions(value);
+    createFittingOptions(value);
+}
+
+function myFunction() {
+	
+	algorithmArray.push("one");
+	initializeTables("one");
+	
+	if (window.File && window.FileReader && window.FileList && window.Blob) {
+		
+		function readSingleFile(evt) {
+		    //Retrieve the first (and only!) File from the FileList object
+		    var f = evt.target.files[0]; 
+		    if (f) {
+		    	
+			    if (!(f.name.split(".")[1] == "bngl" )) 
+					alert(f.name + " is not a valid bngl file.");
+			    else { 
+					document.getElementById("view").innerHTML = "";
+			    	var reader = new FileReader();
+			    	reader.onload = function(e) { 
+				    var contents = e.target.result;
+				    var text = reader.result;
+				    var lines = text.split('\n');
+				    
+					var body = document.getElementById("view");
+				    var heading = document.createElement("H3");
+					heading.innerHTML = "FREE OPTIONS";
+					body.appendChild(heading);
+				    
+				    //Creation of table starts here
+				    var tbl  = document.createElement('table');
+				    tbl.style.width  = '400px';
+				    tbl.id = "paramTable";
+				    tbl.style.border = '1px solid black';
+				    var th = tbl.insertRow();
+				    
+				    for(var j = 0; j <= 3; j++) {
+				        var td = th.insertCell();
+				        td.style.border = '1px solid black';
+				        td.style.width  = '100px';
+				       
+				        if(j == 0)
+				        	td.appendChild(document.createTextNode("Parameter Name"));
+				        else if(j == 1)
+				        	td.appendChild(document.createTextNode("Is Free"));
+				        else if(j == 2)
+				        	td.appendChild(document.createTextNode("Range From"));
+				        else if(j == 3)
+				        	td.appendChild(document.createTextNode("Range TO"));
+				        }	
+				    
+				    
+				    for(var line = 0; line < lines.length; line++) {
+				      var data = lines[line];
+				      if(data.split("#")[0].match("__FREE__")) {
+				    	  data.trimLeft();
+				    	  data.trimRight();
+				    	  if(data.split("#")[0].match("=")) {
+				    		  createTable(data.split("="), true, tbl);
+				    	  }
+				    	  else  createTable(data.split(/\b(\s)/), true, tbl);
+				      }
+				    }
+				    var lRangeValues = document.getElementsByClassName("lRange");
+				    var hRangeValues = document.getElementsByClassName("hRange");
+				    
+				      document.getElementById('view').style.display = "inline";
+				      var node = document.getElementById('output');
+			          node.innerText = text;
+			      }
+			    	reader.readAsText(f);
+			    	document.getElementById('button').style.display = "inline";
+			    } 
+			    document.getElementById("examplebngl").click();
+		    }
+		    else  
+			      alert("Failed to load file");
+		  }
+		
+		function readPerlFile(evt) {
+			console.log(evt);
+		}
+		
+		function readPathBngl(evt) {
+			console.log("readPathBngl::::"+evt);
+		}
+		
+		function readPathConf(evt) {
+			console.log(evt);
+		}
+		
+		  document.getElementById('fileinput').addEventListener('change', readSingleFile, false);
+		  document.getElementById('examplebngl').addEventListener('change', readPathBngl, false);
+		  document.getElementById('exampleconf').addEventListener('change', readPathConf, false);
+		
+		} else {
+		  alert('The File APIs are not fully supported by your browser.');
+		}
+	
+	document.getElementById("createFile").onclick = function() {
+		var textToWrite = "";
+				if(document.getElementById("pathTable") != null)
+			    	textToWrite = getPaths(document.getElementById("pathTable").outerText.split("\n"));
+			    if(document.getElementById("generalTable") != null)
+			    	textToWrite = textToWrite +	getGeneralOptions(document.getElementById("generalTable").outerText.split("\n"));
+			    if(document.getElementById("fittingTableGA") != null)
+			   		textToWrite = textToWrite +	getGAFittingOptions(document.getElementById("fittingTableGA").outerText.split("\n"));
+			    if(document.getElementById("fittingTableSA") != null)
+					textToWrite = textToWrite +	getSAFittingOptions(document.getElementById("fittingTableSA").outerText.split("\n"));
+			    if(document.getElementById("fittingTablePS") != null)
+					textToWrite = textToWrite +	getPSFittingOptions(document.getElementById("fittingTablePS").outerText.split("\n"));
+			    if(document.getElementById("fittingTableDE") != null)
+					textToWrite = textToWrite +	getDEFittingOptions(document.getElementById("fittingTableDE").outerText.split("\n"));
+			    if(document.getElementById("paramTable") != null)
+			    	textToWrite = textToWrite +	getFileContent(document.getElementById("paramTable").outerText.split("\n"));
+			  
+			    var textFileAsBlob = new Blob([textToWrite], {type: "text/plain;charset=utf-8"});
+			    var fileNameToSaveAs = "BioNetFit.conf";
+			    var downloadLink = document.createElement("a");
+			    downloadLink.download = fileNameToSaveAs;
+			    downloadLink.innerHTML = "My Hidden Link";
+			    window.URL = window.URL || window.webkitURL;
+			    downloadLink.href = window.URL.createObjectURL(textFileAsBlob);
+			    downloadLink.onclick = destroyClickedElement;
+			    downloadLink.style.display = "none";
+			    document.body.appendChild(downloadLink);
+			    downloadLink.click();
+			   
+			    var node = document.getElementById('outputConf');
+		        node.innerText = textToWrite;
+		        document.getElementById('buttonConf').style.display = "inline";
+	}
+	
+	function getPaths(keys) {
+		var text = '############# \n';
+		text = text + '### PATHS ### \n';
+		text = text + '############# \n';
+		
+		for(var i = 0; i < keys.length-1; i++) {
+			var temp = "";
+			if(keys[i] == null)
+				return text;
+			
+			temp = temp + keys[i].trim()+"=  ";
+			var lrange = document.getElementById(keys[i].trim()).value;
+			if(lrange == "")
+				temp = temp + "   ";
+			else temp = temp + lrange + "   ";
+
+			text = text + temp + "\n";
+		}
+		return text;
+	}
+	
+	function getGeneralOptions(keys) {
+		var text = '####################### \n';
+		text = text + '### General Options ### \n';
+		text = text + '####################### \n';
+		
+		for(var i = 0; i < keys.length-1; i++) {
+			var temp = "";
+			temp = temp + keys[i].trim()+"=  ";
+			var lrange = document.getElementById(keys[i].trim()).value;
+			if(lrange == "")
+				temp = temp + "   ";
+			else temp = temp + lrange + "   ";
+
+			text = text + temp + "\n";
+		}
+		return text;
+	}
+	function getSAFittingOptions(keys) {
+		var text = '####################### \n';
+		text = text + '### Fitting Options SA ### \n';
+		text = text + '####################### \n';
+		
+		for(var i = 0; i < keys.length-1; i++) {
+			var temp = "";
+			temp = temp + keys[i].trim()+"=  ";
+			var lrange = document.getElementById(keys[i].trim()).value;
+			if(lrange == "")
+				temp = temp + "   ";
+			else temp = temp + lrange + "   ";
+
+			text = text + temp + "\n";
+		}
+		return text;
+	}
+	
+	function getGAFittingOptions(keys) {
+		var text = '####################### \n';
+		text = text + '### Fitting Options GA### \n';
+		text = text + '####################### \n';
+		
+		for(var i = 0; i < keys.length-1; i++) {
+			var temp = "";
+			temp = temp + keys[i].trim()+"=  ";
+			var lrange = document.getElementById(keys[i].trim()).value;
+			if(lrange == "")
+				temp = temp + "   ";
+			else temp = temp + lrange + "   ";
+
+			text = text + temp + "\n";
+		}
+		return text;
+	}
+	function getPSFittingOptions(keys) {
+		var text = '####################### \n';
+		text = text + '### Fitting Options PS### \n';
+		text = text + '####################### \n';
+		
+		for(var i = 0; i < keys.length-1; i++) {
+			var temp = "";
+			temp = temp + keys[i].trim()+"=  ";
+			var lrange = document.getElementById(keys[i].trim()).value;
+			if(lrange == "")
+				temp = temp + "   ";
+			else temp = temp + lrange + "   ";
+
+			text = text + temp + "\n";
+		}
+		return text;
+	}
+	function getDEFittingOptions(keys) {
+		var text = '####################### \n';
+		text = text + '### Fitting Options DE### \n';
+		text = text + '####################### \n';
+		
+		for(var i = 0; i < keys.length-1; i++) {
+			var temp = "";
+			temp = temp + keys[i].trim()+"=  ";
+			var lrange = document.getElementById(keys[i].trim()).value;
+			if(lrange == "")
+				temp = temp + "   ";
+			else temp = temp + lrange + "   ";
+
+			text = text + temp + "\n";
+		}
+		return text;
+	}
+	
+	function getFileContent(keys) {
+		
+		var text = '\n \n# Generate free parameters \n';
+		
+		for(var i = 1; i < keys.length-1; i++) {
+			var temp = "loguniform_var=";
+			temp = temp + keys[i].trim()+"  ";
+			var lrange = document.getElementById("lRange_"+keys[i].trim()).value;
+			if(lrange == "")
+				temp = temp + "   ";
+			else temp = temp + lrange + "   ";
+			
+			var rrange = document.getElementById("hRange_"+keys[i].trim()).value;
+			if(rrange == "")
+				temp = temp + " ";
+			else temp = temp + rrange;
+			
+			text = text + temp + "\n";
+		}
+		
+		return text;
+	}
+	
+	function destroyClickedElement(event)
+	{
+	    document.body.removeChild(event.target);
+	}
+	
+	var button = document.getElementById('button');
+
+	button.onclick = function() {
+	    var div = document.getElementById('output');
+	    if (div.style.display !== 'none') {
+	        div.style.display = 'none';
+	    }
+	    else {
+	        div.style.display = 'block';
+	    }
+	};
+	
+	var buttonConf = document.getElementById('buttonConf');
+
+	buttonConf.onclick = function() {
+	    var div = document.getElementById('outputConf');
+	    if (div.style.display !== 'none') {
+	        div.style.display = 'none';
+	    }
+	    else {
+	        div.style.display = 'block';
+	    }
+	};
+}
+</script>
+<head>
+<!--<img style="-webkit-user-select: none; float:center;" src="http://bionetfit.nau.edu/logo.png">-->
+</head>
+<body onload="myFunction()">
+	<p class="textClass">Click the button to create a File Upload Button.</p>
+	<input style="display:none;" type="file" id="examplebngl" />
+	<input style="display:none;" type="file" id="exampleconf" />
+	<input class='buttonClass' type="file" id="fileinput" /> &nbsp; &nbsp;
+	<button style="display:none" class='buttonClass' id='button'>Hide/Show BNGL</button>
+	<button style="display:none" class='buttonClass' id='buttonConf'>Hide/Show CONF</button>
+	<!-- <button style="display:none" class='buttonClass' id='buttonPerl'>Call Perl</button>  -->
+	</br></br>
+	<!-- <div style="display:none; width:600px;" id="perlArea">
+	</div>	 -->
+	
+  <button class='buttonClass' id="createFile">Create Config file</button>	
+	</br></br>
+	
+	<div>
+	<input type="checkbox" id="radioOne" name="methodology" value="one" checked  onchange="checkRadio(this)"/>
+	<label for="one">GENETIC ALGORITHM</label>
+
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <input type="checkbox" id="radioTwo" name="methodology" value="two" onchange="checkRadio(this)" />
+    <label for="two">PARTICAL SWARM</label>
+    
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <input type="checkbox" id="radioThree" name="methodology" value="three" onchange="checkRadio(this)" />
+    <label for="two">DIFFERENTIAL EVOLUTION</label>
+    
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <input type="checkbox" id="radioFour" name="methodology" value="four" onchange="checkRadio(this)"/>
+    <label for="two">SIMULATED ANNEALING</label>
+    
+	</div>
+
+	<p style="display:none" id="output"></p>
+	<p style="display:none" id="outputConf"></p>
+	<div>
+	<div style="width:600px; display:inline;">
+	
+	<p id="viewError" style="display:none;color:red;">Please Enter a valid range value</p>
+	<div style="display:none" id="view">
+	</div>
+	</div>
+	<div style="width:600px;" id="viewPath">
+	</div>
+	</br></br>
+	<p id="viewGError" style="display:none;color:red;">Please Enter a valid general options value</p>
+	<div style="width:600px;" id="viewGeneralOptions">
+	</div>
+	</br></br>
+	<p id="viewGAFError" style="display:none;color:red;">Please Enter a valid GA fitting options value</p>
+	<div style="width:600px;" id="viewGAFittingOptions">
+	</div>
+	</br></br>
+	<p id="viewPSFError" style="display:none;color:red;">Please Enter a valid PS fitting options value</p>
+	<div style="width:600px;" id="viewPSFittingOptions">
+	</div>
+	</br></br>
+	<p id="viewDEFError" style="display:none;color:red;">Please Enter a valid DE fitting options value</p>
+	<div style="width:600px;" id="viewDEFittingOptions">
+	</div>
+	</br></br>
+	<p id="viewSAFError" style="display:none;color:red;">Please Enter a valid SA fitting options value</p>
+	<div style="width:600px;" id="viewSAFittingOptions">
+	</div>
+	</div>
+</body>
+</html>
